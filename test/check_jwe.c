@@ -939,7 +939,7 @@ START_TEST(test_cjose_jwe_decrypt_aes_kw_oversized_ek)
     _decrypt_oversized_aes_kw_ek(CJOSE_HDR_ALG_A128KW, CJOSE_HDR_ENC_A128CBC_HS256, JWK_OCT_16);
     _decrypt_oversized_aes_kw_ek(CJOSE_HDR_ALG_A192KW, CJOSE_HDR_ENC_A192CBC_HS384, JWK_OCT_24);
     _decrypt_oversized_aes_kw_ek(CJOSE_HDR_ALG_A256KW, CJOSE_HDR_ENC_A256CBC_HS512, JWK_OCT_32);
-    _decrypt_oversized_aes_kw_ek(CJOSE_HDR_ALG_A128KW, CJOSE_HDR_ENC_A128GCM, JWK_OCT_16);
+    _decrypt_oversized_aes_kw_ek(CJOSE_HDR_ALG_A128KW, CJOSE_HDR_ENC_A256GCM, JWK_OCT_16);
     _decrypt_oversized_aes_kw_ek(CJOSE_HDR_ALG_A256KW, CJOSE_HDR_ENC_A256GCM, JWK_OCT_32);
 }
 END_TEST
