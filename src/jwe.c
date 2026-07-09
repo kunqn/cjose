@@ -4,7 +4,7 @@
  * Portions created or assigned to Cisco Systems, Inc. are
  * Copyright (c) 2014-2016 Cisco Systems, Inc.  All Rights Reserved.
  */
-
+#define OPENSSL_API_COMPAT 0x10000000L
 #include <cjose/base64.h>
 #include <cjose/header.h>
 #include <cjose/jwe.h>
@@ -1255,14 +1255,22 @@ static bool _cjose_jwe_decrypt_dat_a256gcm(cjose_jwe_t *jwe, cjose_err *err)
     }
     EVP_CIPHER_CTX_init(ctx);
 
-    if (jwe->enc_iv.raw_len != 12)
+    // First initialize cipher without key/IV (required before setting IV length)
+    if (EVP_DecryptInit_ex(ctx, cipher, NULL, NULL, NULL) != 1)
     {
-        CJOSE_ERROR(err, CJOSE_ERR_INVALID_ARG);
+        CJOSE_ERROR(err, CJOSE_ERR_CRYPTO);
         goto _cjose_jwe_decrypt_dat_a256gcm_fail;
     }
 
-    // initialize context for decryption using A256GCM cipher and CEK and IV
-    if (EVP_DecryptInit_ex(ctx, cipher, NULL, jwe->cek, jwe->enc_iv.raw) != 1)
+    // Set IV length to support non-standard sizes (e.g., 16 bytes from BroadWorks)
+    if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, jwe->enc_iv.raw_len, NULL) != 1)
+    {
+        CJOSE_ERROR(err, CJOSE_ERR_CRYPTO);
+        goto _cjose_jwe_decrypt_dat_a256gcm_fail;
+    }
+
+    // Now set the key and IV
+    if (EVP_DecryptInit_ex(ctx, NULL, NULL, jwe->cek, jwe->enc_iv.raw) != 1)
     {
         CJOSE_ERROR(err, CJOSE_ERR_CRYPTO);
         goto _cjose_jwe_decrypt_dat_a256gcm_fail;

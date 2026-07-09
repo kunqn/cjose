@@ -4,7 +4,7 @@
  * Portions created or assigned to Cisco Systems, Inc. are
  * Copyright (c) 2014-2016 Cisco Systems, Inc.  All Rights Reserved.
  */
-
+#define OPENSSL_API_COMPAT 0x10000000L
 #include <cjose/base64.h>
 #include <cjose/header.h>
 #include <cjose/jws.h>
